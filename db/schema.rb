@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_19_005717) do
+ActiveRecord::Schema.define(version: 2018_12_19_010651) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "investors", force: :cascade do |t|
+    t.string "name"
+    t.string "team"
+    t.bigint "small_investor_category_id"
+    t.string "address"
+    t.integer "tel"
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["small_investor_category_id"], name: "index_investors_on_small_investor_category_id"
+  end
 
   create_table "issuers", force: :cascade do |t|
     t.string "name"
@@ -26,18 +38,44 @@ ActiveRecord::Schema.define(version: 2018_12_19_005717) do
 
   create_table "large_codes", force: :cascade do |t|
     t.string "name"
-    t.string "serial_id"
+    t.integer "serial_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "large_investor_categories", force: :cascade do |t|
+    t.string "name"
+    t.integer "serial_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "small_codes", force: :cascade do |t|
     t.string "name"
-    t.string "serial_id"
+    t.integer "serial_id"
     t.bigint "large_code_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["large_code_id"], name: "index_small_codes_on_large_code_id"
+  end
+
+  create_table "small_investor_categories", force: :cascade do |t|
+    t.string "name"
+    t.integer "serial_id"
+    t.bigint "large_investor_category_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["large_investor_category_id"], name: "index_small_investor_categories_on_large_investor_category_id"
+  end
+
+  create_table "user_investors", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "investor_id"
+    t.boolean "main"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["investor_id"], name: "index_user_investors_on_investor_id"
+    t.index ["user_id"], name: "index_user_investors_on_user_id"
   end
 
   create_table "user_issuers", force: :cascade do |t|
@@ -67,8 +105,12 @@ ActiveRecord::Schema.define(version: 2018_12_19_005717) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "investors", "small_investor_categories"
   add_foreign_key "issuers", "small_codes"
   add_foreign_key "small_codes", "large_codes"
+  add_foreign_key "small_investor_categories", "large_investor_categories"
+  add_foreign_key "user_investors", "investors"
+  add_foreign_key "user_investors", "users"
   add_foreign_key "user_issuers", "issuers"
   add_foreign_key "user_issuers", "users"
 end
