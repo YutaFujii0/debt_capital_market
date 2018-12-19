@@ -1,0 +1,2 @@
+class UserIssuersController < ApplicationController
+end

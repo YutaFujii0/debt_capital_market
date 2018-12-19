@@ -1,0 +1,2 @@
+class VeryImportantInvestorsController < ApplicationController
+end

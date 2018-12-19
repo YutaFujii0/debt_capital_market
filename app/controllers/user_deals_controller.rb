@@ -1,0 +1,2 @@
+class UserDealsController < ApplicationController
+end

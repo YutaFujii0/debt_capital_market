@@ -1,0 +1,2 @@
+class TranchesController < ApplicationController
+end
