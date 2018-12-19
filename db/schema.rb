@@ -10,10 +10,45 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_18_075046) do
+ActiveRecord::Schema.define(version: 2018_12_19_005717) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "issuers", force: :cascade do |t|
+    t.string "name"
+    t.bigint "small_code_id"
+    t.string "list_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["small_code_id"], name: "index_issuers_on_small_code_id"
+  end
+
+  create_table "large_codes", force: :cascade do |t|
+    t.string "name"
+    t.string "serial_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "small_codes", force: :cascade do |t|
+    t.string "name"
+    t.string "serial_id"
+    t.bigint "large_code_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["large_code_id"], name: "index_small_codes_on_large_code_id"
+  end
+
+  create_table "user_issuers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "issuer_id"
+    t.boolean "main"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["issuer_id"], name: "index_user_issuers_on_issuer_id"
+    t.index ["user_id"], name: "index_user_issuers_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -23,8 +58,17 @@ ActiveRecord::Schema.define(version: 2018_12_18_075046) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "tel"
+    t.integer "role"
+    t.string "avatar"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "issuers", "small_codes"
+  add_foreign_key "small_codes", "large_codes"
+  add_foreign_key "user_issuers", "issuers"
+  add_foreign_key "user_issuers", "users"
 end

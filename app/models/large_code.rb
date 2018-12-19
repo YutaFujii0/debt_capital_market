@@ -1,0 +1,2 @@
+class LargeCode < ApplicationRecord
+end
