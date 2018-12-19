@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_19_012731) do
+ActiveRecord::Schema.define(version: 2018_12_19_045339) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -201,6 +201,15 @@ ActiveRecord::Schema.define(version: 2018_12_19_012731) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "very_important_investors", force: :cascade do |t|
+    t.bigint "tranche_id"
+    t.bigint "investor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["investor_id"], name: "index_very_important_investors_on_investor_id"
+    t.index ["tranche_id"], name: "index_very_important_investors_on_tranche_id"
+  end
+
   add_foreign_key "deals", "deal_categories"
   add_foreign_key "deals", "issuers"
   add_foreign_key "feedbacks", "investors"
@@ -218,4 +227,6 @@ ActiveRecord::Schema.define(version: 2018_12_19_012731) do
   add_foreign_key "user_investors", "users"
   add_foreign_key "user_issuers", "issuers"
   add_foreign_key "user_issuers", "users"
+  add_foreign_key "very_important_investors", "investors"
+  add_foreign_key "very_important_investors", "tranches", column: "tranche_id"
 end
