@@ -8,9 +8,10 @@
   = stylesheet_link_tag 'application', media: 'all'
   -# = stylesheet_pack_tag 'application', media: 'all'
 %body
-  = render 'shared/header'
-  = render 'shared/sidebar'
-  = yield
+  .dashboard
+    = render 'shared/sidebar'
+    .dashboard-content
+      = yield
 
   = javascript_include_tag 'application'
   = javascript_pack_tag 'application'

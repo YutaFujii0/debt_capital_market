@@ -1,0 +1,15 @@
+// see layouts/dashboard for .sidebar-dcm element
+
+.sidebar-top {
+  h2 {
+    font-size: $font-size-md;
+  }
+
+  text-align: center;
+}
+
+.sidebar-menus {
+  h4 {
+    font-size: $font-size-sm;
+  }
+}
