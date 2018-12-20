@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_19_045339) do
+ActiveRecord::Schema.define(version: 2018_12_20_041715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,6 +87,8 @@ ActiveRecord::Schema.define(version: 2018_12_19_045339) do
     t.string "strategy"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "tranche_id"
+    t.index ["tranche_id"], name: "index_marketings_on_tranche_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -216,6 +218,7 @@ ActiveRecord::Schema.define(version: 2018_12_19_045339) do
   add_foreign_key "feedbacks", "marketings"
   add_foreign_key "investors", "small_investor_categories"
   add_foreign_key "issuers", "small_codes"
+  add_foreign_key "marketings", "tranches", column: "tranche_id"
   add_foreign_key "orders", "feedbacks"
   add_foreign_key "small_codes", "large_codes"
   add_foreign_key "small_investor_categories", "large_investor_categories"
