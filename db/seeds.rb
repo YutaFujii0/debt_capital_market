@@ -2,19 +2,23 @@
 
 # Delete all data only if it's development environment
 if Rails.env.development?
+  puts "Deleting User instances"
   User.destroy_all
+  puts "Deleting Issuer instances"
   Issuer.destroy_all
+  puts "Deleting Investor instances"
   Investor.destroy_all
+  puts "Deleting Deal instances"
   Deal.destroy_all
 end
 
 if LargeCode.all.empty?
   puts "Create LargeCode model"
   csv_options = { col_sep: ',', quote_char: '"', headers: :first_row }
-  file_path = File.expand_path("../lib/assets/stocklist.csv", __FILE__)
+  file_path = File.expand_path("../../lib/assets/stocklist.csv", __FILE__)
 
   CSV.foreach(file_path, csv_options) do |row|
-    name_read = row["産業分類"]
+    name_read = row["業種分類"]
     LargeCode.create(name: name_read) unless LargeCode.find_by(name: name_read)
   end
   puts "Finished"
@@ -24,10 +28,10 @@ end
 if SmallCode.all.empty?
   puts "Create SmallCode model"
   csv_options = { col_sep: ',', quote_char: '"', headers: :first_row }
-  file_path = File.expand_path("../lib/assets/stocklist.csv", __FILE__)
+  file_path = File.expand_path("../../lib/assets/stocklist.csv", __FILE__)
 
   CSV.foreach(file_path, csv_options) do |row|
-    name_read = row["産業分類"]
+    name_read = row["業種分類"]
     # this is temporary code
     large_code = LargeCode.find_by(name: name_read)
     unless SmallCode.find_by(name: name_read)
@@ -50,12 +54,15 @@ data = {
     "外人": ["外人"]
   }
 if LargeInvestorCategory.all.empty?
+  puts "Create LargeInvestorCategory"
   data.keys.each do |key|
     LargeInvestorCategory.create(name: key) unless LargeInvestorCategory.find_by(name: key)
   end
+  puts "Finished"
 end
 
 if SmallInvestorCategory.all.empty?
+  puts "Create SmallInvestorCategory"
   data.each do |key, value|
     large_investor_category = LargeInvestorCategory.find_by(name: key)
     value.each do |element|
@@ -66,6 +73,7 @@ if SmallInvestorCategory.all.empty?
       end
     end
   end
+  puts "Finished"
 end
 
 # Create users <origination>
