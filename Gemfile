@@ -20,6 +20,7 @@ gem 'webpacker'
 gem 'csv'
 gem 'devise'
 gem 'faker'
+gem 'gimei'
 gem 'haml'
 
 group :development do
