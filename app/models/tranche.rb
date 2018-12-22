@@ -4,4 +4,5 @@ class Tranche < ApplicationRecord
   has_many :marketings, dependent: :destroy
   has_many :feedbacks, through: :marketings
   has_many :orders, through: :feedbacks
+  has_many :very_important_investors, dependent: :destroy
 end
