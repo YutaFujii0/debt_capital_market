@@ -2,8 +2,8 @@
 
 # Delete all data only if it's development environment
 if Rails.env.development?
-  puts "Deleting User instances"
-  User.destroy_all
+  # puts "Deleting User instances"
+  # User.destroy_all
   # puts "Deleting Issuer instances"
   # Issuer.destroy_all
   # puts "Deleting Investor instances"
@@ -80,21 +80,23 @@ end
 # Create users <syndicate>
 # Create users <sales>
 User::ROLE.each do |key, value|
-  puts "Create User #{key}"
-  10.times do
-    gimei = Gimei.name
-    email_head = gimei.first.romaji + gimei.last.romaji
-    attributes = {
-      email: Faker::Internet.email(email_head),
-      password: "123456",
-      first_name: gimei.first.kanji,
-      last_name: gimei.last.kanji,
-      tel: "03-1234-" + Faker::PhoneNumber.subscriber_number,
-      role: value
-    }
-    instance = User.create(attributes)
+  if User.where(role: value).empty?
+    puts "Create User #{key}"
+    10.times do
+      gimei = Gimei.name
+      email_head = gimei.first.romaji + gimei.last.romaji
+      attributes = {
+        email: Faker::Internet.email(email_head),
+        password: "123456",
+        first_name: gimei.first.kanji,
+        last_name: gimei.last.kanji,
+        tel: "03-1234-" + Faker::PhoneNumber.subscriber_number,
+        role: value
+      }
+      instance = User.create(attributes)
+    end
+    puts "Finished"
   end
-  puts "Finished"
 end
 
 # Create issuers
@@ -135,7 +137,7 @@ if Investor.all.empty?
         tel: "03-8888-" + Faker::PhoneNumber.subscriber_number,
         email: Faker::Internet.email
       }
-
+      Investor.create(attributes)
     end
   puts "Finished"
 end
