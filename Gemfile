@@ -17,7 +17,9 @@ gem 'uglifier'
 gem 'webpacker'
 
 # added gems
+gem 'csv'
 gem 'devise'
+gem 'faker'
 gem 'haml'
 
 group :development do
