@@ -194,6 +194,8 @@ end
 
 today = Date.today
 px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.since(3.days), today.next_month.since(4.days),]
+
+# deals
 10.times do
   px = px_dates.sample
   attributes = {
@@ -221,9 +223,59 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
       underwriting_fee: 5,
       sales_fee: 12
     }
-    Tranche.create!(attirbutes)
+    tranche = Tranche.create!(attirbutes)
+
+    # VII
+    investors = Investor.all.sample(5)
+
+    5.times do |index|
+      attributes = {
+        tranche_id: tranche.id,
+        investor_id: investors[index].id
+      }
+      VeryImportantInvestor.create!(attributes)
+    end
 
     # marketings
+    marketing = ["主幹事プレマ②", "主幹事プレマ①", "ソフトヒアリング②", "ソフトヒアリング①"]
+    strategy = ["様子見", "1億成行優先", "フリーゼロ"]
+    volume = ["150億円", "150億円程度" , "150億円程度", "100億円程度"]
+    range = (20..30).to_a
+    investors = Investor.all.sample(10)
 
+    4.times do |index|
+      attributes = {
+        tranche_id: tranche.id,
+        date: deal.pricing.ago((index + 1).days),
+        marketing: marketing[index],
+        volume: volume[index],
+        range: range.slice(rand(11 - index - 1) , index + 1)
+        strategy: strategy.sample
+      }
+      marketing = Marketing.create!(attributes)
+
+      # feedbacks
+      comment = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magnam doloremque dolor, eum a, deleniti corporis possimus consequatur cupiditate molestias ipsa illum non sunt nam at sequi facere aut rerum. Reprehenderit?"
+
+      10.times do |index|
+        attributes = {
+          marketing_id: marketing.id,
+          investor_id: investors[index].id,
+          comment: comment,
+          volume: [1, 3, 5, 7, 10, 20, 30].sample,
+          intent: (1..5).to_a.sample
+        }
+        feedback = Feedback.create!(attributes)
+
+        # order
+        if rand(2) == 0
+          attributes = {
+            feedback_id: feedback.id,
+            spread: marketing.range[0],
+            volume: feedback.volume
+          }
+        end
+      end
+    end
   end
 end
