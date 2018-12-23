@@ -10,6 +10,8 @@ if Rails.env.development?
   # Investor.destroy_all
   puts "Deleting Deal instances"
   Deal.destroy_all
+  puts "Deleting Tranche instances"
+  Tranche.destroy_all
 end
 
 if LargeCode.all.empty?
@@ -144,14 +146,14 @@ end
 
 # ============== Deal related models ===============================
 # Create deal category
-unless DealCategory.all.empty?
+if DealCategory.all.empty?
   puts "Create DealCategory model"
   DealCategory.create(name: ["事業債", "財投機関債", "地方債", "政府保証債", "サムライ債"])
   puts "Finished"
 end
 
 # Create treasury
-unless Treasury.all.empty?
+if Treasury.all.empty?
   puts "Create Treasury model"
   # 10.times do
     attributes = {
@@ -168,7 +170,7 @@ unless Treasury.all.empty?
 end
 
 # Create underwriters
-unless Underwriter.all.empty?
+if Underwriter.all.empty?
   puts "Create Underwriter"
   data = [
     {name: "野村證券", abbreviation: "野村"},
@@ -197,6 +199,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
 
 # deals
 10.times do
+  puts "Create deal"
   px = px_dates.sample
   attributes = {
     issuer_id: Issuer.all.sample.id,
@@ -207,27 +210,29 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
   deal = Deal.create(attributes)
 
   # tranches
+  puts "Create tranches"
   rand(3).ceil.times do
     attributes = {
       deal_id: deal.id,
       treasury_id: Treasury.all.sample.id,
       tenor: [3, 5, 7, 10, 20, 30].sample,
       volume: [50, 100, 150, 200, 250].sample,
-      interest_type: Tranches::INTEREST_TYPE[1], # fixed interest
+      interest_type: Tranche::INTEREST_TYPE[1], # fixed interest
       # coupon: , fixed later
-      restriction: Tranches::RESTRICTION[rand(4)],
+      restriction: Tranche::RESTRICTION[rand(4)],
       # spread: , fixed later
-      book_runners: Underwriter.all.sample(rand(3).ceil),
+      book_runners: Underwriter.all.sample(rand(3) + 1),
       portion: 0.4,
       management_fee: 5,
       underwriting_fee: 5,
       sales_fee: 12
     }
-    tranche = Tranche.create!(attirbutes)
+    tranche = Tranche.create!(attributes)
 
     # VII
     investors = Investor.all.sample(5)
 
+    puts "Create VIIs"
     5.times do |index|
       attributes = {
         tranche_id: tranche.id,
@@ -243,13 +248,14 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
     range = (20..30).to_a
     investors = Investor.all.sample(10)
 
+    puts "Create Marketings"
     4.times do |index|
       attributes = {
         tranche_id: tranche.id,
         date: deal.pricing.ago((index + 1).days),
         marketing: marketing[index],
         volume: volume[index],
-        range: range.slice(rand(11 - index - 1) , index + 1)
+        range: range.slice(rand(11 - index - 1) , index + 1),
         strategy: strategy.sample
       }
       marketing = Marketing.create!(attributes)
@@ -257,6 +263,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
       # feedbacks
       comment = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magnam doloremque dolor, eum a, deleniti corporis possimus consequatur cupiditate molestias ipsa illum non sunt nam at sequi facere aut rerum. Reprehenderit?"
 
+      puts "Create Feedbacks"
       10.times do |index|
         attributes = {
           marketing_id: marketing.id,
@@ -268,6 +275,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
         feedback = Feedback.create!(attributes)
 
         # order
+        puts "Create Orders"
         if rand(2) == 0
           attributes = {
             feedback_id: feedback.id,

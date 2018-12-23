@@ -22,3 +22,7 @@ module DebtCapitalMarket
     # the framework and any gems in your application.
   end
 end
+
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular 'tranche', 'tranches'
+end
