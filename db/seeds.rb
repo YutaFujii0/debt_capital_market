@@ -142,9 +142,88 @@ if Investor.all.empty?
   puts "Finished"
 end
 
+# ============== Deal related models ===============================
+# Create deal category
+unless DealCategory.all.empty?
+  puts "Create DealCategory model"
+  DealCategory.create(name: ["事業債", "財投機関債", "地方債", "政府保証債", "サムライ債"])
+  puts "Finished"
+end
+
+# Create treasury
+unless Treasury.all.empty?
+  puts "Create Treasury model"
+  # 10.times do
+    attributes = {
+      serial_id: 360,
+      tenor: 10,
+      issue: Date.today,
+      maturity: Date.today.since(10.years),
+      coupon: 0.0005,
+      payment_per_an: 2
+    }
+    Treasury.create!(attributes)
+  # end
+  puts "Finished"
+end
+
+# Create underwriters
+unless Underwriter.all.empty?
+  puts "Create Underwriter"
+  data = [
+    {name: "野村證券", abbreviation: "野村"},
+    {name: "三菱UFJモルガン・スタンレー証券", abbreviation: "三菱"},
+    {name: "SMBC日興証券", abbreviation: "日興"},
+    {name: "みずほ証券", abbreviation: "みずほ"},
+    {name: "大和証券", abbreviation: "大和"},
+    {name: "東海東京証券", abbreviation: "東海東京"},
+    {name: "ゴールドマン・サックス証券", abbreviation: "GS"},
+    {name: "メリルリンチ証券", abbreviation: "メリル"}
+  ]
+  Underwriter.create!(data)
+  puts "Finished"
+end
+
+
 # Create deals
 # Create tranches
 # Create very important investors
 # Create marketings
 # Create feedbacks
 # Create orders
+
+today = Date.today
+px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.since(3.days), today.next_month.since(4.days),]
+10.times do
+  px = px_dates.sample
+  attributes = {
+    issuer_id: Issuer.all.sample.id,
+    deal_category_id: DealCategory.all.sample.id,
+    pricing: px,
+    settlement: px.since(5.days)
+  }
+  deal = Deal.create(attributes)
+
+  # tranches
+  rand(3).ceil.times do
+    attributes = {
+      deal_id: deal.id,
+      treasury_id: Treasury.all.sample.id,
+      tenor: [3, 5, 7, 10, 20, 30].sample,
+      volume: [50, 100, 150, 200, 250].sample,
+      interest_type: Tranches::INTEREST_TYPE[1], # fixed interest
+      # coupon: , fixed later
+      restriction: Tranches::RESTRICTION[rand(4)],
+      # spread: , fixed later
+      book_runners: Underwriter.all.sample(rand(3).ceil),
+      portion: 0.4,
+      management_fee: 5,
+      underwriting_fee: 5,
+      sales_fee: 12
+    }
+    Tranche.create!(attirbutes)
+
+    # marketings
+
+  end
+end
