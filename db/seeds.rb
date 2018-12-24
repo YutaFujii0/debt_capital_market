@@ -150,6 +150,7 @@ if DealCategory.all.empty?
   puts "Finished"
 end
 
+# Treasury.destroy_all
 # Create treasury
 if Treasury.all.empty?
   puts "Create Treasury model"
@@ -160,7 +161,8 @@ if Treasury.all.empty?
       issue: Date.today,
       maturity: Date.today.since(10.years),
       coupon: 0.0005,
-      payment_per_an: 2
+      payment_per_an: 2,
+      cmp_interest: 0.0005
     }
     Treasury.create!(attributes)
   # end
@@ -209,7 +211,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
 
   # tranches
   puts "Create tranches"
-  rand(3).ceil.times do
+  (rand(3) + 1).times do
     attributes = {
       deal_id: deal.id,
       treasury_id: Treasury.all.sample.id,
@@ -219,7 +221,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
       # coupon: , fixed later
       restriction: Tranche::RESTRICTION[rand(4)],
       # spread: , fixed later
-      book_runners: Underwriter.all.sample(rand(3) + 1).map {|i| i.abbreviation},
+      book_runners: Underwriter.all.sample(rand(3) + 1).map {|i| i.id},
       portion: 0.4,
       management_fee: 5,
       underwriting_fee: 5,
@@ -286,9 +288,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
     end
 
     tranche.spread = tranche.marketings.first.range[0]
-    # TODO: need modifying. coupon is sum of spd and compound yield
-    # TODO: need to add compound interest to treasuries table
-    tranche.coupon = tranche.treasury.coupon + tranche.spread * 0.0001
+    tranche.coupon = tranche.reckon_coupon
     tranche.save!
   end
 end

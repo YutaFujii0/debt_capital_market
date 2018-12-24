@@ -18,4 +18,8 @@ class Tranche < ApplicationRecord
     2 => "制約なし",
     3 => "リテール"
   }
+
+  def reckon_coupon
+    treasury.cmp_interest + spread * 0.0001
+  end
 end
