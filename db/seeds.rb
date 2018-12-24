@@ -10,8 +10,6 @@ if Rails.env.development?
   # Investor.destroy_all
   puts "Deleting Deal instances"
   Deal.destroy_all
-  puts "Deleting Tranche instances"
-  Tranche.destroy_all
 end
 
 if LargeCode.all.empty?
@@ -221,7 +219,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
       # coupon: , fixed later
       restriction: Tranche::RESTRICTION[rand(4)],
       # spread: , fixed later
-      book_runners: Underwriter.all.sample(rand(3) + 1),
+      book_runners: Underwriter.all.sample(rand(3) + 1).map {|i| i.abbreviation},
       portion: 0.4,
       management_fee: 5,
       underwriting_fee: 5,
@@ -242,7 +240,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
     end
 
     # marketings
-    marketing = ["主幹事プレマ②", "主幹事プレマ①", "ソフトヒアリング②", "ソフトヒアリング①"]
+    marketing_str = ["主幹事プレマ②", "主幹事プレマ①", "ソフトヒアリング②", "ソフトヒアリング①"]
     strategy = ["様子見", "1億成行優先", "フリーゼロ"]
     volume = ["150億円", "150億円程度" , "150億円程度", "100億円程度"]
     range = (20..30).to_a
@@ -253,7 +251,7 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
       attributes = {
         tranche_id: tranche.id,
         date: deal.pricing.ago((index + 1).days),
-        marketing: marketing[index],
+        marketing: marketing_str[index],
         volume: volume[index],
         range: range.slice(rand(11 - index - 1) , index + 1),
         strategy: strategy.sample
@@ -282,8 +280,15 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
             spread: marketing.range[0],
             volume: feedback.volume
           }
+          Order.create!(attributes)
         end
       end
     end
+
+    tranche.spread = tranche.marketings.first.range[0]
+    # TODO: need modifying. coupon is sum of spd and compound yield
+    # TODO: need to add compound interest to treasuries table
+    tranche.coupon = tranche.treasury.coupon + tranche.spread * 0.0001
+    tranche.save!
   end
 end
