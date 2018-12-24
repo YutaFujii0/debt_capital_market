@@ -6,3 +6,6 @@
 #     https: false
 #   )
 # end
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular 'tranche', 'tranches'
+end
