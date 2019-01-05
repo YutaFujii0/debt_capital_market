@@ -142,6 +142,36 @@ if Investor.all.empty?
   puts "Finished"
 end
 
+# Create UserInvestors(assign sales)
+puts "Create UserInvestor"
+Investor.all.each do |investor|
+  if investor.users.empty?
+    2.times do |index|
+      attributes = {
+        user_id: User.where(role: 2).sample.id,
+        investor_id: investor.id,
+        main: index == 0
+      }
+      UserInvestor.create!(attributes)
+    end
+  end
+end
+
+# Create UserIssuers(assign origination)
+puts "Create UserIssuer"
+Issuer.all.each do |issuer|
+  if issuer.users.empty?
+    3.times do |index|
+      attributes = {
+        user_id: User.where(role: 0).sample.id,
+        issuer_id: issuer.id,
+        main: index == 0
+      }
+      UserIssuer.create!(attributes)
+    end
+  end
+end
+
 # ============== Deal related models ===============================
 # Create deal category
 if DealCategory.all.empty?
@@ -207,7 +237,17 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
     pricing: px,
     settlement: px.since(5.days)
   }
-  deal = Deal.create(attributes)
+  deal = Deal.create!(attributes)
+
+  # Create UserDeal model(assign syndicate)
+  2.times do |index|
+    attributes = {
+      deal_id: deal.id,
+      user_id: User.where(role: 1).sample.id,
+      main: index == 0
+    }
+    UserDeal.create!(attributes)
+  end
 
   # tranches
   puts "Create tranches"
@@ -291,4 +331,5 @@ px_dates = [today.next_month, today.next_month.since(2.days), today.next_month.s
     tranche.coupon = tranche.reckon_coupon
     tranche.save!
   end
+
 end
