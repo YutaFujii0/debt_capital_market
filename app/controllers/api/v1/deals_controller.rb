@@ -3,7 +3,7 @@ class Api::V1::DealsController < Api::V1::BaseController
     @deals = Deal.all
     # @tranches = @deals.first.tranches
     render json: {
-      deals: @deals.to_json(
+      deals: @deals.as_json(
         include: [
           tranches:
             { include: [
@@ -16,11 +16,12 @@ class Api::V1::DealsController < Api::V1::BaseController
                 }},
               treasury: {}
             ] },
-          issuer: { only: :name },
-          deal_category: { only: :name }
+          issuer: { include: :users },
+          deal_category: { only: :name },
+          users: { only: [:first_name, :last_name, :tel, :email, :role] }
         ]
       ),
-      investors: Investor.all.to_json
+      investors: Investor.all.as_json({ include: :users })
     }
 
   end
