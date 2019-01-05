@@ -22,6 +22,7 @@ gem 'devise'
 gem 'faker'
 gem 'gimei'
 gem 'haml'
+gem 'rack-cors'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
